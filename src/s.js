@@ -1,0 +1,3 @@
+function a(){
+    'return(`        <div>人员信息</div>        <div>姓名：${data.name || "阿猫"}</div>        <div>年龄: ${data.age}</div>        <div>            ${data.list.map(function(v){                return `                    <div>                        <div>${v.loc}</div>                        <div>${v.com}</div>                        <div>${v.title}</div>                    <div>                                `            }).join('')}        </div>    `)' 
+}

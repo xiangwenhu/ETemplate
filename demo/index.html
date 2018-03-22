@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ETemplate Demo</title>
+</head>
+
+<body>
+    <div id='ct'></div>
+
+    <script type="text/html" id='demo1'>
+        <div>人员信息</div>
+        <div>姓名：${name || "阿猫"}</div>
+        <div>年龄: ${age}</div>
+        <hr>
+        <div>
+            ${render('#date',new Date())} ${each(list,render('#list'))}
+        </div>
+    </script>
+
+    <script type="text/html" id='date'>
+        ${_data_.toJSON()} 'a'
+    </script>
+
+    <script type="text/html" id='list'>
+        <div>
+            <div>${loc}</div>
+            <div>${com}</div>
+            <div>${title}</div>
+            <div>${loc}</div>
+            <div>${com}</div>
+            <div>${title}</div>
+            <div>${loc}</div>
+            <div>${com}</div>
+            <div>${title}</div>
+            <div>${loc}</div>
+            <div>${com}</div>
+            <div>${title}</div>
+            <div>
+                <hr>
+    </script>
+
+
+
+    <script src="../src/eTemplate.js"></script>
+    <script>
+        function getList() {
+            const arr = [];
+            for (let i = 0; i < 100; i++) {
+                arr.push({
+                    loc: `北京` + i,
+                    com: `阿里` + i,
+                    title: '开发' + i
+                })
+            }
+            return arr
+        }
+
+        eTemplate.registerFun('getNow', function () {
+            alert(new Date().toJSON())
+        })
+
+
+        console.time('renderTime')
+        var tpl = document.getElementById('demo1').innerHTML;
+        document.getElementById('ct').innerHTML = eTemplate(tpl, {
+            age: 28,
+            list: getList()
+        })
+        console.timeEnd('renderTime')
+    </script>
+</body>
+
+</html>
