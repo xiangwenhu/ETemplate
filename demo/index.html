@@ -17,11 +17,11 @@
         <div>年龄: ${age}</div>
         <hr>
         <div>
-            ${render('#date',new Date())} ${each(list,render('#list'))}
+            ${render('date',new Date())} ${each(list,render('#list'))}
         </div>
     </script>
 
-    <script type="text/html" id='date'>
+    <script type="text/html" id='date'>      
         ${_data_.toJSON()} 'a'
     </script>
 
@@ -66,6 +66,7 @@
 
         console.time('renderTime')
         var tpl = document.getElementById('demo1').innerHTML;
+        eTemplate.registerTemplate('date','#date')
         document.getElementById('ct').innerHTML = eTemplate(tpl, {
             age: 28,
             list: getList()

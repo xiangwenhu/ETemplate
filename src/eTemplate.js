@@ -86,12 +86,9 @@
     function getTemplate(selectorOrName) {
         let tpl = templates[selectorOrName]
         if (tpl) {
-            return templates[selectorOrName]
+            return tpl
         }
-        const el = document.querySelector(selectorOrName)
-        if (el) {
-            templates[selectorOrName] = el.innerHTML
-        }
+        eTemplate.registerTemplate(selectorOrName)
         return templates[selectorOrName] || ''
     }
 
@@ -114,9 +111,12 @@
     }
 
     eTemplate.registerTemplate = function (name, selector) {
-        const el = document.querySelector(selectorOrName)
+        if(!selector){
+            selector = name
+        }
+        const el = document.querySelector(selector)
         if (el) {
-            templates[selectorOrName] = el.innerHTML
+            templates[name] = el.innerHTML
         }
     }
 
