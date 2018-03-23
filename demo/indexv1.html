@@ -11,23 +11,24 @@
 <body>
     <div id='ct'></div>
 
-    <script type="text/template" id='demo1'>
+    <script type="text/html" id='demo1'>
         <div>人员信息</div>
-        <div>姓名：${ "\"阿猫"}</div>
+        <div>姓名：${name || "阿猫"}</div>
         <div>年龄: ${age}</div>
-        <% if(true) {%>
-            ${new Date().toJSON()}
-        <% }%>
-        <hr> ${each(list,render('#list'))}        
+        <hr>
+        <%if a=1 %>
+            <div>
+                ${render('date',new Date())} ${each(list,render('#list'))}
+            </div>
     </script>
 
-    <script type="text/template" id='date'>
+    <script type="text/html" id='date'>
         ${_data_.toJSON()} 'a' -- ${log(_data_,new Date(),[{a:1},1,2,3])} --
     </script>
 
-    <script type="text/template" id='list'>
+    <script type="text/html" id='list'>
         <div>
-            <di>索引：${__index__}</div>
+
             <div>${loc}</div>
             <div>${com}</div>
             <div>${title}</div>
@@ -40,17 +41,17 @@
             <div>${loc}</div>
             <div>${com}</div>
             <div>${title}</div>
-        <div>
-            <hr>
+            <div>
+                <hr>
     </script>
 
 
 
-    <script src="../src/v2/eTemplate.js"></script>
+    <script src="../src/eTemplate.js"></script>
     <script>
         function getList() {
             const arr = [];
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 1000; i++) {
                 arr.push({
                     loc: `北京` + i,
                     com: `阿里` + i,
@@ -69,18 +70,13 @@
         console.time('renderTime')
 
         var tpl = document.getElementById('demo1').innerHTML;
-        for (var i = 0; i < 1; i++) {
-
-            var reuslt = eTemplate(tpl, {
-                age: 28,
-                name: 's',
-                list: list
-            })
-        }
+        eTemplate.registerTemplate('date', '#date')
+        document.getElementById('ct').innerHTML = eTemplate(tpl, {
+            age: 28,
+            list: list
+        })
 
         console.timeEnd('renderTime')
-
-        document.getElementById('ct').innerHTML = reuslt
     </script>
 </body>
 
