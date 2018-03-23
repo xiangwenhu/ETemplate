@@ -18,7 +18,7 @@
     </script>
 
     <script type="text/html" id='date'>
-        ${getNow()}
+        ${getNow()} 
         ${_data_.toJSON()} 'a'
     </script>
 
@@ -63,11 +63,50 @@ eTemplate.registerFun('getNow', function () {
     })
     console.timeEnd('renderTime')
 ```
+4. 支持模板内打log, 直接输出到页面
+```html
+    <script type="text/html" id='date'>      
+        ${_data_.toJSON()} 'a' -- ${log(_data_,new Date())} --
+    </script>
+
+```
+
 
 ## 缺点
 1. 慢慢慢
+  *   Chrome: 65
+
+| 数据条数        |    时间 （ms）  |
+| -------------  |-------------: |
+|   1000         |400            | 
+|   500          |150            | 
+|   100          |22             | 
+|   50           |12             | 
+|   20           |6              | 
+|   10           |3.5            | 
+|   1            |2              | 
+
+* Firefox 59   
+
+| 数据条数        |    时间 （ms） |
+| -------------  |-------------: |
+|   1000         |450-500        | 
+|   500          |250            | 
+|   100          |50-60          | 
+|   50           |30             | 
+|   20           |16             | 
+|   10           |10             | 
+|   1            |5              | 
+
+
 2. 烂烂烂
 
+
+3. 没有ifelse等语句   
+可以通过
+```js
+${data.id> 10 ? render()}
+```
 
 
 >[JavaScript Micro-Templating](https://johnresig.com/blog/javascript-micro-templating/)   

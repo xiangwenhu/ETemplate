@@ -22,11 +22,12 @@
     </script>
 
     <script type="text/html" id='date'>      
-        ${_data_.toJSON()} 'a'
+        ${_data_.toJSON()} 'a' -- ${log(_data_,new Date(),[{a:1},1,2,3])} --
     </script>
 
     <script type="text/html" id='list'>
         <div>
+            
             <div>${loc}</div>
             <div>${com}</div>
             <div>${title}</div>
@@ -39,7 +40,7 @@
             <div>${loc}</div>
             <div>${com}</div>
             <div>${title}</div>
-            <div>
+        <div>
                 <hr>
     </script>
 
@@ -59,19 +60,25 @@
             return arr
         }
 
+        const list = getList()
+
         eTemplate.registerFun('getNow', function () {
             alert(new Date().toJSON())
         })
 
-
-        console.time('renderTime')
-        var tpl = document.getElementById('demo1').innerHTML;
-        eTemplate.registerTemplate('date','#date')
-        document.getElementById('ct').innerHTML = eTemplate(tpl, {
-            age: 28,
-            list: getList()
-        })
+  console.time('renderTime')
+        for(var i =0; i < 100; i++){
+      
+            var tpl = document.getElementById('demo1').innerHTML;
+            eTemplate.registerTemplate('date','#date')
+            eTemplate(tpl, {
+                age: 28,
+                list: list
+            })
+      
+        }
         console.timeEnd('renderTime')
+
     </script>
 </body>
 

@@ -1,4 +1,6 @@
 (function (self) {
+
+    const toString = Object.prototype.toString
     // 类型检查
     const typeCheker = {
         isObject(v) {
@@ -9,14 +11,21 @@
         },
         isString(v) {
             return typeof v === 'string' || v instanceof String
+        },
+        isJSONObject(v) {
+            return typeCheker.isObject(v) && ['[object object]', '[object Array]'].indexOf(toString.call(v)) >= 0
         }
+    }
+
+    const objectToString = function(...args){
+        return  args.map(v => typeCheker.isJSONObject(v) ? JSON.stringify(v) : v)
     }
 
     //模板缓存
     const templates = Object.create(null)
     // 内置log方法
     function log(...args) {
-        return args.map(v => typeCheker.isObject(v) ? JSON.stringify(v) : v)
+        return objectToString(...args)
     }
     // 内置each方法
     function each(arr, fn) {
@@ -61,7 +70,7 @@
     }
 
     function getParamterValues(d) {
-        return getValues(d,true).concat(getValues(builtInFunctions))
+        return getValues(d, true).concat(getValues(builtInFunctions))
     }
 
     function eTemplate(tpl, data) {
@@ -111,7 +120,7 @@
     }
 
     eTemplate.registerTemplate = function (name, selector) {
-        if(!selector){
+        if (!selector) {
             selector = name
         }
         const el = document.querySelector(selector)
@@ -121,5 +130,5 @@
     }
 
     self.eTemplate = eTemplate
-    
+
 })(self || window)
