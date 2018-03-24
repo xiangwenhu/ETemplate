@@ -2,10 +2,13 @@
 
     const config = {
         startTag: '<%',
-        endTag: '%>'
+        endTag: '%>',
+        cache: true
     }
+
+    const BUILTINFN = '__builtInFn__'
     const objectToString = function (...args) {
-        return args.map(v => typeCheker.isJSONObject(v) ? JSON.stringify(v) : v)
+        return args.map(function (v) { return typeCheker.isJSONObject(v) ? JSON.stringify(v) : v })
     }
 
     /* 类型检查:Begin */
@@ -38,7 +41,6 @@
     //模板缓存
     const templates = Object.create(null)
 
-
     /* 内置方法：Begin */
     function log(...args) {
         return objectToString(...args)
@@ -65,10 +67,18 @@
         encode,
         render
     }
+
+    let builtFnCode = spreadProperties(builtInFunctions, BUILTINFN)
+
+    function refreshBuiltFnCode() {
+        return builtFnCode = spreadProperties(builtInFunctions, BUILTINFN)
+    }
     /* 内置方法：End */
 
 
     /* 词法解析：Begin */
+
+
     function spreadProperties(obj, name) {
         if (isJSONObject(obj)) {
             return `var {${Object.keys(obj).join(',')}} = ${name};`
@@ -119,7 +129,7 @@
         let code = `           
             let codes = [];       
             // 展开内置函数    
-            ${spreadProperties(builtInFunctions,'__builtFn__')};
+            ${builtFnCode};
             // 展开属性
             eval(spreadProperties(__data__,'__data__'));
             // 执行代码
@@ -128,40 +138,56 @@
             return codes.join('')
         `
         try {
-            var render = new Function('__data__', '__builtFn__', code);
+            var render = new Function('__data__', BUILTINFN, code);
             return function (data) {
                 return render(data, builtInFunctions)
             }
         } catch (e) {
-            e.temp = 'function anonymous(__data__, __builtFn__) {' + code + '}';
+            e.code = `function anonymous(__data__, __builtFn__) {${code}}`
             throw e;
         }
     }
 
-    function getRender(tpl) {
-        const code = parse(tpl)
-        return compileRender(code)
-    }
 
-    function getTemplate(selectorOrName) {
-        let tpl = templates[selectorOrName]
-        if (tpl) {
-            return tpl
+    function getRenderFromId(name, id) {
+        if (!id) {
+            id = name
+            name = id.slice(1)
         }
-        eTemplate.registerTemplate(selectorOrName)
-        return templates[selectorOrName] || ''
+        const tpl = doc.querySelector(id).innerHTML
+        return getRender(name, tpl)
     }
 
-    function render(selectorOrName, d) {
-        // 普通render
-        const tpl = getTemplate(selectorOrName)
-        const renderer = getRender(tpl)
+    function getRenderFromStr(name, tpl) {
+        // 只传入name时， name为tpl
+        if (!tpl) {
+            tpl = name
+            name = undefined
+        }
+
+        const code = parse(tpl)
+        const fn = compileRender(code)
+        if (name) {
+            builtInFunctions[name] = fn
+            refreshBuiltFnCode()
+        }
+
+        return fn
+    }
+
+    function getRender(idOrName) {
+        return idOrName.indexOf('#') === 0 ? getRenderFromId(idOrName) : getRenderFromStr(idOrName)
+    }
+
+    function render(idOrName, d) {
+
+        const renderer = getRender(idOrName)
         if (isJSONObjectOrArray(d)) {
             return renderer(d)
         }
         // each TODO:: 怎么获取index, arr
-        
-        return (d, index, arr) => { 
+
+        return function (d, index, arr) {
             d['__index__'] = index
             d['__arr__'] = arr
             return renderer(d)
@@ -170,8 +196,9 @@
 
     /* 词法解析：End */
 
+
     function eTemplate(tpl, data) {
-        const renderer = getRender(tpl)
+        const renderer = getRenderFromStr(tpl)
         if (!data) {
             return renderer
         }
@@ -193,16 +220,20 @@
                 }
             }
         }
+        refreshBuiltFnCode()
     }
 
-    eTemplate.registerTemplate = function (name, selector) {
-        if (!selector) {
-            selector = name
-        }
-        const el = doc.querySelector(selector)
-        if (el) {
-            templates[name] = el.innerHTML
-        }
+    eTemplate.unregisterFun = function (name) {
+        delete builtInFunctions[name]
+        refreshBuiltFnCode()
+    }
+
+    eTemplate.register = function (name, tpl) {
+        return getRenderFromStr(name, tpl)
+    }
+
+    eTemplate.registerById = function (name, id) {
+        return getRenderFromId(name, id)
     }
 
     self.eTemplate = eTemplate
