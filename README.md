@@ -21,18 +21,18 @@
     <script type="text/template" id='list'>
         <div>
             <di>索引：${__index__}</div>
-            <div>${loc}</div>
-            <div>${com}</div>
-            <div>${title}</div>
-            <div>${loc}</div>
-            <div>${com}</div>
-            <div>${title}</div>
-            <div>${loc}</div>
-            <div>${com}</div>
-            <div>${title}</div>
-            <div>${loc}</div>
-            <div>${com}</div>
-            <div>${title}</div>
+            <div>${loc || ''}</div>
+            <div>${com || ''}</div>
+            <div>${title|| ''}</div>
+            <div>${loc|| ''}</div>
+            <div>${com|| ''}</div>
+            <div>${title|| ''}</div>
+            <div>${loc|| ''}</div>
+            <div>${com|| ''}</div>
+            <div>${title|| ''}</div>
+            <div>${loc|| ''}</div>
+            <div>${com|| ''}</div>
+            <div>${title|| ''}</div>
         <div>
             <hr>
     </script>
@@ -49,17 +49,30 @@ eTemplate.registerFun('getNow', function () {
         ${_data_.toJSON()} 'a'
     </script>
 ```
-3. 支持模板注册
+3. 支持模板注册   
+方式一
 ```js
-    console.time('renderTime')
-    var tpl = document.getElementById('demo1').innerHTML;
-    eTemplate.registerTemplate('date','#date')
-    document.getElementById('ct').innerHTML = eTemplate(tpl, {
-        age: 28,
-        list: getList()
-    })
-    console.timeEnd('renderTime')
+ eTemplate.registerById('listRender','#list')
 ```
+方式二   
+```js
+var tpl = document.getElmentById('tpl1').innerHTML 
+eTemplate.registerById('listRender',tpl)
+```
+使用   
+```html
+    <script type="text/template" id='demo1'>
+        <div>人员信息</div>
+        <div>姓名：${ "\"阿猫"}</div>
+        <div>年龄: ${age}</div>
+        <% if(true) {%>
+            ${new Date().toJSON()}
+        <% }%>
+        <hr> ${each(list,listRender)}        
+    </script>
+
+```
+
 4. 支持模板内打log, 直接输出到页面
 ```html
     <script type="text/html" id='date'>      
@@ -78,6 +91,33 @@ eTemplate.registerFun('getNow', function () {
         <% }%>
         <hr> ${each(list,render('#list'))}        
     </script>
+```
+6. 内置render自由渲染
+```html
+    <script type="text/template" id='demo1'>       
+        <hr>
+        ${render('listRender',{loc:'天津',com:'where', title:'咿呀'})}   
+    </script>
+
+    <script type="text/template" id='list'>
+        <div>           
+          
+                <div>${loc || ''}</div>
+                <div>${com || ''}</div>
+                <div>${title|| ''}</div>
+                <div>${loc|| ''}</div>
+                <div>${com|| ''}</div>
+                <div>${title|| ''}</div>
+                <div>${loc|| ''}</div>
+                <div>${com|| ''}</div>
+                <div>${title|| ''}</div>
+                <div>${loc|| ''}</div>
+                <div>${com|| ''}</div>
+                <div>${title|| ''}</div>
+        <div>
+            <hr>
+    </script>
+
 ```
 
 

@@ -18,7 +18,9 @@
         <% if(true) {%>
             ${new Date().toJSON()}
         <% }%>
-        <hr> ${each(list,render('#list'))}        
+           
+        <hr>
+        ${render('listRender',{loc:'天津',com:'where', title:'咿呀'})}   
     </script>
 
     <script type="text/template" id='date'>
@@ -26,20 +28,20 @@
     </script>
 
     <script type="text/template" id='list'>
-        <div>
-            <di>索引：${__index__}</div>
-            <div>${loc}</div>
-            <div>${com}</div>
-            <div>${title}</div>
-            <div>${loc}</div>
-            <div>${com}</div>
-            <div>${title}</div>
-            <div>${loc}</div>
-            <div>${com}</div>
-            <div>${title}</div>
-            <div>${loc}</div>
-            <div>${com}</div>
-            <div>${title}</div>
+        <div>           
+          
+                <div>${loc || ''}</div>
+                <div>${com || ''}</div>
+                <div>${title|| ''}</div>
+                <div>${loc|| ''}</div>
+                <div>${com|| ''}</div>
+                <div>${title|| ''}</div>
+                <div>${loc|| ''}</div>
+                <div>${com|| ''}</div>
+                <div>${title|| ''}</div>
+                <div>${loc|| ''}</div>
+                <div>${com|| ''}</div>
+                <div>${title|| ''}</div>
         <div>
             <hr>
     </script>
@@ -50,7 +52,7 @@
     <script>
         function getList() {
             const arr = [];
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 50; i++) {
                 arr.push({
                     loc: `北京` + i,
                     com: `阿里` + i,
@@ -62,25 +64,24 @@
 
         const list = getList()
 
-        eTemplate.registerFun('getNow', function () {
-            alert(new Date().toJSON())
-        })
+        eTemplate.registerById('listRender','#list')
 
-        console.time('renderTime')
+      
 
         var tpl = document.getElementById('demo1').innerHTML;
         for (var i = 0; i < 1; i++) {
-
+            console.time('renderTime')
             var reuslt = eTemplate(tpl, {
                 age: 28,
                 name: 's',
                 list: list
             })
+            console.timeEnd('renderTime')
         }
 
-        console.timeEnd('renderTime')
+      
 
-        document.getElementById('ct').innerHTML = reuslt
+       document.getElementById('ct').innerHTML = reuslt
     </script>
 </body>
 

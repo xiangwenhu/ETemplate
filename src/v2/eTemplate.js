@@ -38,9 +38,6 @@
     }
     /* 类型检查:End */
 
-    //模板缓存
-    const templates = Object.create(null)
-
     /* 内置方法：Begin */
     function log(...args) {
         return objectToString(...args)
@@ -71,14 +68,13 @@
     let builtFnCode = spreadProperties(builtInFunctions, BUILTINFN)
 
     function refreshBuiltFnCode() {
-        return builtFnCode = spreadProperties(builtInFunctions, BUILTINFN)
+        builtFnCode = spreadProperties(builtInFunctions, BUILTINFN)
+        return builtFnCode
     }
     /* 内置方法：End */
 
 
     /* 词法解析：Begin */
-
-
     function spreadProperties(obj, name) {
         if (isJSONObject(obj)) {
             return `var {${Object.keys(obj).join(',')}} = ${name};`
@@ -148,14 +144,26 @@
         }
     }
 
+    function getRenderFromCache(name) {
+        const fn = builtInFunctions[name]
+        if (name && isFunction(fn)) {
+            return fn
+        }
+        return null
+    }
 
     function getRenderFromId(name, id) {
         if (!id) {
             id = name
             name = id.slice(1)
         }
+        // 检查缓存
+        let fn = getRenderFromCache(name)
+        if (fn) {
+            return fn
+        }
         const tpl = doc.querySelector(id).innerHTML
-        return getRender(name, tpl)
+        return getRenderFromStr(name, tpl)
     }
 
     function getRenderFromStr(name, tpl) {
@@ -164,38 +172,45 @@
             tpl = name
             name = undefined
         }
+        // 检查缓存
+        let fn = getRenderFromCache(name)
+        if (fn) {
+            return fn
+        }
 
         const code = parse(tpl)
-        const fn = compileRender(code)
+        fn = compileRender(code)
         if (name) {
             builtInFunctions[name] = fn
             refreshBuiltFnCode()
         }
-
         return fn
     }
 
     function getRender(idOrName) {
-        return idOrName.indexOf('#') === 0 ? getRenderFromId(idOrName) : getRenderFromStr(idOrName)
+        if (idOrName.indexOf('#') === 0) {
+            return getRenderFromId(idOrName)
+        } else {
+            let fn = getRenderFromCache(idOrName)
+            if (fn) {
+                return fn
+            }
+            return getRenderFromStr(idOrName)
+        }
     }
 
     function render(idOrName, d) {
-
         const renderer = getRender(idOrName)
         if (isJSONObjectOrArray(d)) {
             return renderer(d)
         }
-        // each TODO:: 怎么获取index, arr
-
         return function (d, index, arr) {
             d['__index__'] = index
             d['__arr__'] = arr
-            return renderer(d)
+            return getRender(idOrName)(d)
         }
     }
-
     /* 词法解析：End */
-
 
     function eTemplate(tpl, data) {
         const renderer = getRenderFromStr(tpl)
@@ -204,6 +219,7 @@
         }
         return renderer(data)
     }
+
     /**
      * 註冊函數
      * @param {函數名，也可以是對象} name 
@@ -223,15 +239,29 @@
         refreshBuiltFnCode()
     }
 
+    /**
+     * 取消注册的函数
+     * @param {函数名} name 
+     */
     eTemplate.unregisterFun = function (name) {
         delete builtInFunctions[name]
         refreshBuiltFnCode()
     }
 
+    /**
+     * 注册模板渲染函数
+     * @param {名称} name 
+     * @param {模板字符串} tpl 
+     */
     eTemplate.register = function (name, tpl) {
         return getRenderFromStr(name, tpl)
     }
 
+    /**
+     * 通过id注册模板渲染函数
+     * @param {名称} name 
+     * @param {id} id 
+     */
     eTemplate.registerById = function (name, id) {
         return getRenderFromId(name, id)
     }
