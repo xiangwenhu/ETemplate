@@ -60,7 +60,7 @@ var tpl = document.getElmentById('tpl1').innerHTML
 eTemplate.registerById('listRender',tpl)
 ```
 使用   
-```html
+```js
     <script type="text/template" id='demo1'>
         <div>人员信息</div>
         <div>姓名：${ "\"阿猫"}</div>
@@ -81,7 +81,7 @@ eTemplate.registerById('listRender',tpl)
 
 ```
 5. 也支持语句
-```html
+```js
     <script type="text/template" id='demo1'>
         <div>人员信息</div>
         <div>姓名：${ "\"阿猫"}</div>
