@@ -15,12 +15,8 @@
         <div>人员信息</div>
         <div>姓名：${ "\"阿猫"}</div>
         <div>年龄: ${age}</div>
-        <% if(true) {%>
-            ${new Date().toJSON()}
-        <% }%>
-           
         <hr>
-        ${render('listRender',{loc:'天津',com:'where', title:'咿呀'})}   
+        ${each(list,render('listRender'))}   
     </script>
 
     <script type="text/template" id='date'>
@@ -28,31 +24,30 @@
     </script>
 
     <script type="text/template" id='list'>
-        <div>           
-          
-                <div>${loc || ''}</div>
-                <div>${com || ''}</div>
-                <div>${title|| ''}</div>
-                <div>${loc|| ''}</div>
-                <div>${com|| ''}</div>
-                <div>${title|| ''}</div>
-                <div>${loc|| ''}</div>
-                <div>${com|| ''}</div>
-                <div>${title|| ''}</div>
-                <div>${loc|| ''}</div>
-                <div>${com|| ''}</div>
-                <div>${title|| ''}</div>
+        <div> 
+            <div>${loc }</div>
+            <div>${com }</div>
+            <div>${title}</div>
+            <div>${loc}</div>
+            <div>${com}</div>
+            <div>${title}</div>
+            <div>${loc}</div>
+            <div>${com}</div>
+            <div>${title}</div>
+            <div>${loc}</div>
+            <div>${com}</div>
+            <div>${title}</div>
         <div>
-            <hr>
+        <hr>
     </script>
 
 
 
-    <script src="../src/v2/eTemplate.js"></script>
+    <script src="../src/eTemplate.js"></script>
     <script>
         function getList() {
             const arr = [];
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 10000; i++) {
                 arr.push({
                     loc: `北京` + i,
                     com: `阿里` + i,
@@ -64,12 +59,10 @@
 
         const list = getList()
 
-        eTemplate.registerById('listRender','#list')
-
-      
+        eTemplate.registerById('listRender','#list')      
 
         var tpl = document.getElementById('demo1').innerHTML;
-        for (var i = 0; i < 1; i++) {
+        for (var i = 0; i < 10; i++) {
             console.time('renderTime')
             var reuslt = eTemplate(tpl, {
                 age: 28,
@@ -81,7 +74,7 @@
 
       
 
-       document.getElementById('ct').innerHTML = reuslt
+      // document.getElementById('ct').innerHTML = reuslt
     </script>
 </body>
 

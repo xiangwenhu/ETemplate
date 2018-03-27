@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ETemplate演示页</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            font-size: 16px
+        }
+
+        .main {
+            display: flex;
+            height: 40%;
+            justify-content: space-around;
+        }
+
+        #left,
+        #right {
+            flex: 0 0 48%;
+            height: 100%;
+            justify-content: space-between
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        #btnExecute {
+            line-height: 25px;
+            background-color: brown
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div id='left'>
+            <div>数据</div>
+
+            <textarea id='areaData'></textarea>
+
+        </div>
+        <div id='right'>
+            <div>模板</div>
+
+            <textarea id='areaTemplate'></textarea>
+
+        </div>
+    </div>
+
+    <div style="text-align:center">
+        <input type="button" id="btnExecute" value="执行">
+    </div>
+    <div id='result'>
+
+    </div>
+
+
+    <script src="../src/eTemplate.js"></script>
+    <script>
+        const areaData = document.getElementById('areaData')
+        const areaTemplate = document.getElementById('areaTemplate')
+        const result = document.getElementById('result')
+
+        const startTag = /<script.*?>/
+        const endTag = /<\/script>/
+
+        const searchParams = new URLSearchParams(document.location.search)
+        const type = searchParams.get('type')
+
+        if (type) {
+            loadAndRender(type)
+        }
+
+        async function loadAndRender(type) {
+            try {
+                let data = await getResource(`/demo/config/data/${type}.js`)
+                let tpl = await getResource(`/demo/config/tpl/${type}.html`)
+                areaData.value = data
+                areaTemplate.value = tpl
+                render()
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+        function register() {
+            removeAll()
+            let tpl = areaTemplate.value
+            tpl.split(endTag).filter(v => !!v.trim()).forEach(tpl => {
+                var div = document.createElement('div')
+                div.className = 'tpl'
+                div.innerHTML = `${tpl}<\/script>`
+                document.body.appendChild(div)
+            })
+        }
+
+        function removeAll() {
+            let tpls = document.querySelectorAll('.tpl');
+            let tplElement
+            for (let i = 0; i < tpls.length; i++) {
+                tplElement = tpls[i]
+                tplElement.parentElement.removeChild(tplElement)
+            }
+            tplElement = null
+        }
+
+        function getResource(url) {
+            return fetch(url).then(res => res.text())
+        }
+
+        function render() {
+            try {
+                register()
+                let tpl = document.querySelector('.tpl script').innerHTML
+                let data = JSON.parse(areaData.value.trim())
+                result.innerHTML = eTemplate(tpl, data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+        document.getElementById('btnExecute').addEventListener('click', function (ev) {
+            render()
+        })
+    </script>
+
+
+
+</body>
+
+</html>

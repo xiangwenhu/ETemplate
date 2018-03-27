@@ -119,6 +119,32 @@ eTemplate.registerById('listRender',tpl)
     </script>
 
 ```
+7. 异步加载模板
+```js
+eTemplate.ajaxTemplate('/demo/config/tpl/simpleNoTag.html',function(tpl){ 
+    console.log(tpl	)
+})
+
+
+eTemplate.ajaxTemplate( 'demo2', '/demo/config/tpl/simpleNoTag.html',function(tpl){ 
+    console.log(tpl	)
+})
+
+```
+8. 异步加载模板以及数据
+```js
+eTemplate.ajaxLoad('/demo/config/tpl/simpleNoTag.html', '/demo/config/data/simple.js')
+
+eTemplate.ajaxLoad('/demo/config/tpl/simpleNoTag.html', '/demo/config/data/simple.js',function(tpl,d){
+    console.log(tpl,d)
+})
+
+eTemplate.ajaxLoad('/demo/config/tpl/simpleNoTag.html', '/demo/config/data/simple.js', '#result')
+
+eTemplate.ajaxLoad('/demo/config/tpl/simpleNoTag.html', '/demo/config/data/simple.js', '#result' ,function(tpl,d){
+    console.log(tpl,d)
+})
+```
 
 
 ## 缺点
