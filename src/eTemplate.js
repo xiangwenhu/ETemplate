@@ -9,7 +9,7 @@
     const BUILTINFN = '__builtInFn__'
     const objectToString = function (...args) {
         return args.map(function (v) {
-            return typeCheker.isJSONObject(v) ? JSON.stringify(v) : v
+            return isJSONObject(v) ? JSON.stringify(v) : v
         })
     }
 
